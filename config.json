@@ -1,8 +1,7 @@
 {
   "urls": [
-    "https://rent.591.com.tw/list?region=1&price=10000$_25000$&other=pet,cook,near_subway&sort=posttime_desc&notice=not_cover,all_sex&acreage=8$_40$",
-    "https://rent.591.com.tw/list?region=3&section=26,38,37,34,43&price=10000$_25000$&other=pet,cook,near_subway&sort=posttime_desc&notice=not_cover,all_sex&acreage=8$_40$"
+    "https://rent.591.com.tw/list?region=1&section=4,3,8,9&kind=1&price=10000_20000,20000_30000,30000_40000&other=cook,near_subway&sort=posttime_desc"
   ],
-  "intervalMinutes": 30,
-  "fetchCount": 15
+  "intervalMinutes": 10,
+  "fetchCount": 30
 }
