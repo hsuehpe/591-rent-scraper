@@ -1,33 +1,72 @@
 import fs from "node:fs";
-import configJson from "../../config.json";
-import type { Config, History } from "../types";
+import type { HistoryByUrl, HistoryFileV1, Listing } from "../types";
 
-const config = configJson as Config;
 const historyFile = "591_data.json";
 
-export function loadHistory(): History {
+function emptyHistory(urls: string[]): HistoryByUrl {
+  return Object.fromEntries(urls.map((url) => [url, []]));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isListing(value: unknown): value is Listing {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.link === "string"
+  );
+}
+
+function toListingArray(value: unknown): Listing[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(isListing);
+}
+
+function parseHistory(raw: unknown, urls: string[]): HistoryByUrl {
+  if (Array.isArray(raw)) {
+    return Object.fromEntries(
+      urls.map((url, index) => [url, toListingArray(raw[index])]),
+    );
+  }
+
+  if (!isRecord(raw) || raw.version !== 1 || !isRecord(raw.searches)) {
+    return emptyHistory(urls);
+  }
+
+  const searches = raw.searches;
+
+  return Object.fromEntries(
+    urls.map((url) => [url, toListingArray(searches[url])]),
+  );
+}
+
+export function loadHistory(
+  urls: string[],
+  filePath: string = historyFile,
+): HistoryByUrl {
   try {
-    const raw = JSON.parse(fs.readFileSync(historyFile, "utf8")) as unknown;
-    const storedHistory = Array.isArray(raw) ? raw : [];
-    const history: History = [];
-
-    config.urls.forEach((_, index) => {
-      const items = storedHistory[index];
-      history[index] = Array.isArray(items) ? items : [];
-    });
-
-    return history;
+    const raw = JSON.parse(fs.readFileSync(filePath, "utf8")) as unknown;
+    return parseHistory(raw, urls);
   } catch {
-    const emptyHistory: History = [];
-
-    config.urls.forEach((_, index) => {
-      emptyHistory[index] = [];
-    });
-
-    return emptyHistory;
+    return emptyHistory(urls);
   }
 }
 
-export function saveHistory(history: History): void {
-  fs.writeFileSync(historyFile, JSON.stringify(history, null, 2), "utf8");
+export function saveHistory(
+  history: HistoryByUrl,
+  filePath: string = historyFile,
+): void {
+  const historyFileContent: HistoryFileV1 = {
+    version: 1,
+    searches: history,
+  };
+
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify(historyFileContent, null, 2),
+    "utf8",
+  );
 }

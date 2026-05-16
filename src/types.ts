@@ -4,7 +4,12 @@ export interface Listing {
   link: string;
 }
 
-export type History = Listing[][];
+export type HistoryByUrl = Record<string, Listing[]>;
+
+export interface HistoryFileV1 {
+  version: 1;
+  searches: HistoryByUrl;
+}
 
 export interface Config {
   urls: string[];
