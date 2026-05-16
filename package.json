@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
-    "test": "pnpm typecheck"
+    "test": "tsx tests/cityParser.test.ts && pnpm typecheck"
   },
   "keywords": [],
   "author": "",

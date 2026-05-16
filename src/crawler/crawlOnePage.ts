@@ -1,6 +1,7 @@
 import { chromium } from "playwright";
 import * as cheerio from "cheerio";
 import configJson from "../../config.json";
+import { extractCityFromTitle } from "./cityParser";
 import type { Config, Listing } from "../types";
 
 const config = configJson as Config;
@@ -20,8 +21,7 @@ export async function crawlOnePage(url: string): Promise<[string, Listing[]]> {
     const $ = cheerio.load(content);
 
     const titleText = $("title").text();
-    const match = titleText.match(/【(.+?)出租】/);
-    const city = match ? match[1] : "未知";
+    const city = extractCityFromTitle(titleText);
 
     const items = $(".list-wrapper .item").slice(0, config.fetchCount);
     const results: Listing[] = [];
