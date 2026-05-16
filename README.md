@@ -22,10 +22,10 @@
 
 ```bash
 # 安裝必要套件
-npm install
+pnpm install
 
 # 安裝 Playwright 需要用到的瀏覽器執行檔
-npx playwright install
+pnpm exec playwright install
 ```
 
 ## Configuration
@@ -85,12 +85,13 @@ npx playwright install
 - intervalMinutes 為程式執行的時間間隔，預設為每 30 分鐘執行一次
 - fetchCount 為每次執行程式，每個篩選條件下的所獲取的最新房源數量（包含最近更新的房源），程式的邏輯是比對上一次執行所存下的房源，篩選出沒看過的物件，並推播給使用者
 
-最後，需將 `index.js` 內 `setInterval(checkForNewListings, intervalMs);` 的註解拿掉
+程式會依照 `intervalMinutes` 設定的時間間隔自動定期執行。
 
 ## 執行
 
 ```bash
-node index.js
+pnpm build
+pnpm start
 ```
 
 你會看到終端機顯示爬蟲執行狀況，並於有新物件時推播至 Discord
